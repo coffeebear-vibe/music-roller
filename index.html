@@ -7,291 +7,461 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Album Roll">
   <title>Album Roll</title>
-  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --surface: #161616;
-      --surface2: #1e1e1e;
-      --border: #2c2c2c;
-      --text: #f5f5f7;
-      --text2: #a1a1a6;
-      --muted: #555;
-      --accent: #fc3c44;
-      --accent2: #ff6b6b;
-      --pink: #ff2d55;
-      --purple: #bf5af2;
-      --green: #30d158;
-      --red: #ff453a;
+      --bg: #080810;
+      --surface: #0f0f1a;
+      --surface2: #16162a;
+      --surface3: #1e1e35;
+      --border: #252540;
+      --border2: #2e2e52;
+      --text: #f0efff;
+      --text2: #8888bb;
+      --muted: #44446a;
+      --accent: #e040fb;
+      --accent2: #b388ff;
+      --teal: #00e5cc;
+      --gold: #ffd740;
+      --green: #69f0ae;
+      --red: #ff5252;
+      --glow: rgba(224, 64, 251, 0.18);
     }
 
     html, body {
       height: 100%; width: 100%;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
+    }
+
+    /* subtle grid bg */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(224,64,251,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(224,64,251,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
     }
 
     body {
       display: flex; flex-direction: column;
       min-height: 100dvh;
-      padding-top: max(env(safe-area-inset-top), 52px);
+      padding-top: max(env(safe-area-inset-top), 48px);
       padding-bottom: max(env(safe-area-inset-bottom), 28px);
       padding-left: 20px; padding-right: 20px;
+      position: relative; z-index: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     /* ── HEADER ── */
     .header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 18px; flex-shrink: 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 20px; flex-shrink: 0;
     }
-    .header-left { display: flex; flex-direction: column; gap: 1px; }
+    .header-left { display: flex; flex-direction: column; gap: 2px; }
     .header-left h1 {
-      font-size: 28px; font-weight: 800; color: var(--text);
-      letter-spacing: -0.03em; line-height: 1;
+      font-family: 'Syne', sans-serif;
+      font-size: 30px; font-weight: 800; color: var(--text);
+      letter-spacing: -0.04em; line-height: 1;
     }
-    .header-left h1 span { color: var(--accent); }
-    .header-left p {
-      font-size: 11px; font-weight: 400; color: var(--text2);
-      letter-spacing: 0.05em; text-transform: uppercase; margin-top: 3px;
+    .header-left h1 .accent-word {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
+    .header-left .tagline {
+      font-size: 10px; font-weight: 500; color: var(--muted);
+      letter-spacing: 0.18em; text-transform: uppercase; margin-top: 4px;
+    }
+
     .count-wrap {
       display: flex; flex-direction: column; align-items: center;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 8px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 18px; padding: 10px 18px;
+      position: relative; overflow: hidden;
+    }
+    .count-wrap::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(224,64,251,0.08), transparent);
     }
     .count-num {
-      font-size: 22px; font-weight: 800; color: var(--accent);
-      letter-spacing: -0.02em; line-height: 1;
+      font-family: 'Syne', sans-serif;
+      font-size: 24px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em; line-height: 1; position: relative;
     }
-    .count-label { font-size: 10px; color: var(--text2); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1px; }
+    .count-label {
+      font-size: 9px; color: var(--text2); font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; position: relative;
+    }
 
     /* ── BUTTON ROW ── */
-    .btn-row { display: flex; gap: 10px; margin-bottom: 16px; flex-shrink: 0; }
+    .btn-row { display: flex; gap: 10px; margin-bottom: 18px; flex-shrink: 0; }
+
     .roll-btn {
-      flex: 2; padding: 17px; border-radius: 14px; border: none;
-      background: var(--accent); color: #fff;
-      font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px;
-      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; outline: none;
+      flex: 2; padding: 16px 20px; border-radius: 16px; border: none;
+      background: linear-gradient(135deg, #e040fb, #b388ff);
+      color: #fff;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; outline: none;
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.12s ease, filter 0.12s ease;
-      box-shadow: 0 4px 20px rgba(252, 60, 68, 0.35);
+      transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 28px rgba(224, 64, 251, 0.4), 0 0 0 1px rgba(224,64,251,0.2);
+      position: relative; overflow: hidden;
+      user-select: none;
     }
-    .roll-btn:active { transform: scale(0.96); filter: brightness(0.9); }
-    .roll-btn:disabled { background: var(--surface2); color: var(--muted); box-shadow: none; cursor: default; }
+    .roll-btn::after {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.4s ease;
+    }
+    .roll-btn:hover::after { left: 100%; }
+    .roll-btn:active { transform: scale(0.97); filter: brightness(0.9); }
+    .roll-btn:disabled {
+      background: var(--surface2); color: var(--muted);
+      box-shadow: none; cursor: default;
+    }
+
     .clear-btn {
-      flex: 1; padding: 17px; border-radius: 14px;
-      border: 1px solid var(--border); background: var(--surface2);
-      color: var(--text2); font-family: 'Outfit', sans-serif;
-      font-weight: 600; font-size: 13px; letter-spacing: 0.04em;
+      flex: 1; padding: 16px; border-radius: 16px;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--text2); font-family: 'DM Sans', sans-serif;
+      font-weight: 600; font-size: 12px; letter-spacing: 0.06em;
       text-transform: uppercase; cursor: pointer; outline: none;
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.12s ease, background 0.12s ease;
+      transition: transform 0.12s ease, background 0.12s ease, color 0.12s;
+      user-select: none;
     }
-    .clear-btn:active { transform: scale(0.96); background: var(--border); }
+    .clear-btn:active { transform: scale(0.97); background: var(--border); color: var(--text); }
 
     /* ── MAIN CARD ── */
     .card {
-      width: 100%; background: var(--surface);
-      border: 1px solid var(--border); border-radius: 22px;
-      padding: 0; position: relative; overflow: hidden;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      position: relative; overflow: hidden;
       display: flex; flex-direction: column; flex-shrink: 0;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
     }
-    .card-accent-bar {
-      height: 3px; width: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--purple), var(--pink));
-      opacity: 0; transition: opacity 0.4s ease; flex-shrink: 0;
+    .card.revealed {
+      border-color: var(--border2);
+      box-shadow: 0 0 40px rgba(224, 64, 251, 0.1), 0 8px 32px rgba(0,0,0,0.5);
     }
-    .card.revealed .card-accent-bar { opacity: 1; }
+
+    /* top gradient bar */
+    .card-bar {
+      height: 2px; width: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--teal));
+      opacity: 0; transition: opacity 0.5s ease; flex-shrink: 0;
+    }
+    .card.revealed .card-bar { opacity: 1; }
+
     .card-inner { padding: 22px 22px 20px; }
 
-    /* vinyl art placeholder */
+    /* album art */
     .vinyl-wrap {
-      width: 72px; height: 72px; border-radius: 14px;
-      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
-      border: 1px solid var(--border); display: flex; align-items: center;
-      justify-content: center; font-size: 30px; flex-shrink: 0;
+      width: 76px; height: 76px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--surface3), var(--surface2));
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; flex-shrink: 0;
       position: relative; overflow: hidden;
-      opacity: 0; transition: opacity 0.3s ease 0.1s;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      opacity: 0; transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s;
+      transform: scale(0.9);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(224,64,251,0.1);
     }
-    .card.revealed .vinyl-wrap { opacity: 1; }
+    .card.revealed .vinyl-wrap { opacity: 1; transform: scale(1); }
     .vinyl-wrap::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+      background: linear-gradient(135deg, rgba(255,255,255,0.07), transparent 60%);
     }
 
     .card-top { display: flex; gap: 16px; align-items: flex-start; }
-    .card-top-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding-top: 2px; }
+    .card-top-text {
+      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px;
+      padding-top: 2px;
+      /* allow text selection */
+      user-select: text;
+      -webkit-user-select: text;
+    }
 
     .pick-label {
-      font-size: 10px; font-weight: 600; color: var(--accent);
-      letter-spacing: 0.2em; text-transform: uppercase;
+      font-size: 9px; font-weight: 700; color: var(--accent);
+      letter-spacing: 0.25em; text-transform: uppercase;
       opacity: 0; transition: opacity 0.3s ease;
+      user-select: none;
     }
     .card.revealed .pick-label { opacity: 1; }
 
     .album-name {
-      font-size: clamp(17px, 4.5vw, 22px); font-weight: 800;
-      color: var(--text); line-height: 1.2; letter-spacing: -0.02em;
-      opacity: 0; transform: translateY(6px);
-      transition: opacity 0.3s ease 0.05s, transform 0.3s ease 0.05s;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(18px, 5vw, 24px); font-weight: 800;
+      color: var(--text); line-height: 1.15; letter-spacing: -0.03em;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.35s ease 0.06s, transform 0.35s ease 0.06s;
+      /* allow wrapping for copy */
+      white-space: normal;
+      word-break: break-word;
     }
     .card.revealed .album-name { opacity: 1; transform: translateY(0); }
 
     .artist-name {
       font-size: 14px; font-weight: 500; color: var(--text2);
-      opacity: 0; transition: opacity 0.3s ease 0.1s;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      opacity: 0; transition: opacity 0.35s ease 0.12s;
+      white-space: normal; word-break: break-word;
     }
     .card.revealed .artist-name { opacity: 1; }
 
+    .meta-row {
+      display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+      opacity: 0; transition: opacity 0.35s ease 0.16s;
+      margin-top: 2px;
+    }
+    .card.revealed .meta-row { opacity: 1; }
+
     .year-chip {
       display: inline-flex; align-items: center;
-      background: var(--surface2); border: 1px solid var(--border);
+      background: var(--surface3); border: 1px solid var(--border2);
       border-radius: 6px; padding: 3px 8px;
-      font-size: 11px; font-weight: 600; color: var(--text2);
-      margin-top: 2px; width: fit-content;
-      opacity: 0; transition: opacity 0.3s ease 0.15s;
+      font-size: 10px; font-weight: 600; color: var(--text2);
     }
-    .card.revealed .year-chip { opacity: 1; }
 
+    /* ── DESCRIPTION ── */
+    .description-wrap {
+      margin-top: 14px; padding: 12px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      opacity: 0; transform: translateY(6px);
+      transition: opacity 0.35s ease 0.2s, transform 0.35s ease 0.2s;
+      /* Selectable */
+      user-select: text;
+      -webkit-user-select: text;
+      cursor: text;
+    }
+    .card.revealed .description-wrap { opacity: 1; transform: translateY(0); }
+    .description-label {
+      font-size: 9px; font-weight: 700; color: var(--accent);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 6px;
+      user-select: none;
+    }
+    .description-text {
+      font-size: 12.5px; line-height: 1.65; color: var(--text2);
+      font-style: italic;
+    }
+
+    /* ── CARD ACTIONS ── */
     .card-actions {
       display: flex; gap: 8px; margin-top: 16px;
-      opacity: 0; transition: opacity 0.3s ease 0.2s;
+      opacity: 0; transition: opacity 0.35s ease 0.25s;
     }
     .card.revealed .card-actions { opacity: 1; }
 
     .am-btn {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
       padding: 11px 14px; border-radius: 12px;
-      background: linear-gradient(135deg, #fc3c44, #ff2d55);
-      text-decoration: none; font-size: 12px; font-weight: 700;
-      color: #fff; letter-spacing: 0.04em; text-transform: uppercase;
-      box-shadow: 0 4px 16px rgba(252, 60, 68, 0.3);
+      background: linear-gradient(135deg, #e040fb, #b388ff);
+      text-decoration: none; font-size: 11px; font-weight: 700;
+      color: #fff; letter-spacing: 0.08em; text-transform: uppercase;
+      box-shadow: 0 4px 20px rgba(224, 64, 251, 0.35);
       transition: transform 0.12s, filter 0.12s;
+      user-select: none;
     }
     .am-btn:active { transform: scale(0.96); filter: brightness(0.9); }
 
     .copy-btn {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
       padding: 11px 14px; border-radius: 12px;
-      background: var(--surface2); border: 1px solid var(--border);
-      font-size: 12px; font-weight: 700; color: var(--text2);
-      letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
-      outline: none; font-family: 'Outfit', sans-serif;
+      background: var(--surface2); border: 1px solid var(--border2);
+      font-size: 11px; font-weight: 700; color: var(--text2);
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+      outline: none; font-family: 'DM Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
-      transition: transform 0.12s, background 0.12s, color 0.15s;
-      border: none;
+      transition: transform 0.12s, background 0.12s, color 0.15s, border-color 0.15s;
+      user-select: none;
     }
     .copy-btn:active { transform: scale(0.96); background: var(--border); }
-    .copy-btn.copied { color: var(--green); }
+    .copy-btn.copied { color: var(--green); border-color: rgba(105,240,174,0.3); }
 
-    /* empty / shimmer */
+    /* selectable info panel */
+    .select-hint {
+      display: flex; align-items: center; gap: 6px;
+      margin-top: 10px; padding: 8px 12px;
+      background: rgba(0,229,204,0.06);
+      border: 1px solid rgba(0,229,204,0.15);
+      border-radius: 10px;
+      opacity: 0; transition: opacity 0.35s ease 0.3s;
+      user-select: none;
+    }
+    .card.revealed .select-hint { opacity: 1; }
+    .select-hint span {
+      font-size: 10px; color: var(--teal); font-weight: 500; letter-spacing: 0.04em;
+    }
+
+    /* ── EMPTY STATE ── */
     .card-empty {
       display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 10px; padding: 36px 20px;
+      justify-content: center; gap: 10px; padding: 40px 20px;
     }
-    .card-empty .e-icon { font-size: 38px; opacity: 0.25; }
-    .card-empty p { font-size: 13px; color: var(--text2); text-align: center; line-height: 1.5; }
+    .card-empty .e-icon { font-size: 40px; opacity: 0.2; }
+    .card-empty p {
+      font-size: 13px; color: var(--text2); text-align: center;
+      line-height: 1.6; max-width: 200px;
+    }
 
-    .shimmer-wrap { padding: 22px; display: none; flex-direction: column; gap: 12px; }
+    /* ── SHIMMER ── */
+    .shimmer-wrap { padding: 22px; display: none; flex-direction: column; gap: 14px; }
     .shimmer-wrap.active { display: flex; }
     .shimmer-row { display: flex; gap: 14px; align-items: flex-start; }
-    .shimmer-art { width: 72px; height: 72px; border-radius: 14px; flex-shrink: 0; }
-    .shimmer-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+    .shimmer-art { width: 76px; height: 76px; border-radius: 16px; flex-shrink: 0; }
+    .shimmer-lines { flex: 1; display: flex; flex-direction: column; gap: 9px; padding-top: 4px; }
     .shimmer {
       border-radius: 6px;
-      background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
-      background-size: 200% 100%; animation: shimmer 1s infinite;
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+      background-size: 200% 100%; animation: shimmer 1.2s infinite;
     }
-    .sh-sm { height: 10px; width: 35%; }
-    .sh-title { height: 22px; width: 85%; }
-    .sh-sub { height: 14px; width: 55%; }
+    .sh-sm { height: 9px; width: 30%; }
+    .sh-title { height: 24px; width: 80%; }
+    .sh-sub { height: 14px; width: 50%; }
+    .sh-desc { height: 48px; border-radius: 10px; }
     .sh-btn { height: 40px; border-radius: 12px; }
     @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
-    /* ── STATUS ── */
+    /* ── STATUS BAR ── */
     .status-bar {
       display: flex; align-items: center; gap: 8px;
-      margin-top: 10px; margin-bottom: 14px; flex-shrink: 0;
+      margin-top: 12px; margin-bottom: 16px; flex-shrink: 0;
     }
     .status-dot {
-      width: 6px; height: 6px; border-radius: 50%;
+      width: 5px; height: 5px; border-radius: 50%;
       background: var(--muted); flex-shrink: 0; transition: background 0.3s;
     }
-    .status-dot.ok { background: var(--green); }
+    .status-dot.ok { background: var(--green); box-shadow: 0 0 6px rgba(105,240,174,0.5); }
     .status-dot.err { background: var(--red); }
     .status-dot.loading { background: var(--accent); animation: pulse 1s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .status-text { font-size: 11px; color: var(--text2); }
+    .status-text { font-size: 11px; color: var(--muted); font-weight: 500; }
 
     /* ── RECENTS ── */
-    .recents-section { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .recents-section {
+      flex: 1; overflow: hidden; display: flex;
+      flex-direction: column; min-height: 0; padding-bottom: 8px;
+    }
     .recents-label {
-      font-size: 10px; font-weight: 600; color: var(--muted);
-      letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; flex-shrink: 0;
+      font-size: 9px; font-weight: 700; color: var(--muted);
+      letter-spacing: 0.22em; text-transform: uppercase;
+      margin-bottom: 10px; flex-shrink: 0;
     }
     .recents-list { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+
     .recent-item {
       display: flex; align-items: center; gap: 12px;
-      padding: 11px 14px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; opacity: 0; transform: translateY(4px);
+      padding: 12px 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; opacity: 0; transform: translateY(4px);
       transition: opacity 0.3s ease, transform 0.3s ease; flex-shrink: 0;
     }
     .recent-item.visible { opacity: 1; transform: translateY(0); }
     .recent-art {
-      width: 42px; height: 42px; border-radius: 8px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--surface2), var(--border));
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--surface2), var(--surface3));
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
     }
-    .recent-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-    .recent-album { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .recent-artist { font-size: 11px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .recent-info {
+      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+      /* Allow text selection */
+      user-select: text; -webkit-user-select: text;
+    }
+    .recent-album {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px; font-weight: 700; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .recent-artist {
+      font-size: 10px; color: var(--text2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .recent-btns { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; flex-shrink: 0; }
     .recent-am {
-      font-size: 10px; font-weight: 700; color: var(--accent);
-      text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase;
+      font-size: 9px; font-weight: 700; color: var(--accent);
+      text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;
       padding: 3px 0;
     }
     .recent-copy {
-      font-size: 10px; font-weight: 600; color: var(--text2);
+      font-size: 9px; font-weight: 600; color: var(--text2);
       cursor: pointer; background: none; border: none; padding: 3px 0;
-      font-family: 'Outfit', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;
+      font-family: 'DM Sans', sans-serif; letter-spacing: 0.08em; text-transform: uppercase;
       -webkit-tap-highlight-color: transparent;
-      transition: color 0.2s;
+      transition: color 0.2s; user-select: none;
     }
     .recent-copy.copied { color: var(--green); }
+
+    /* waveform decorative element in header */
+    .waveform {
+      display: flex; align-items: center; gap: 2px; height: 16px;
+      margin-top: 6px;
+    }
+    .waveform .bar {
+      width: 2px; background: var(--muted); border-radius: 2px;
+      animation: wave 1.4s ease-in-out infinite;
+    }
+    .waveform .bar:nth-child(1){ height: 4px; animation-delay: 0s; }
+    .waveform .bar:nth-child(2){ height: 8px; animation-delay: 0.1s; }
+    .waveform .bar:nth-child(3){ height: 12px; animation-delay: 0.2s; }
+    .waveform .bar:nth-child(4){ height: 16px; animation-delay: 0.3s; }
+    .waveform .bar:nth-child(5){ height: 10px; animation-delay: 0.4s; }
+    .waveform .bar:nth-child(6){ height: 6px; animation-delay: 0.5s; }
+    .waveform .bar:nth-child(7){ height: 14px; animation-delay: 0.15s; }
+    .waveform .bar:nth-child(8){ height: 8px; animation-delay: 0.35s; }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.5); opacity: 0.4; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- HEADER -->
   <div class="header">
     <div class="header-left">
-      <h1>Album<span>Roll</span></h1>
-      <p>Unlistened picks</p>
+      <h1>Album<span class="accent-word">Roll</span></h1>
+      <div class="tagline">Discover your backlog</div>
+      <div class="waveform">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div>
+      </div>
     </div>
     <div class="count-wrap">
       <div class="count-num" id="countNum">—</div>
-      <div class="count-label">left</div>
+      <div class="count-label">unheard</div>
     </div>
   </div>
 
+  <!-- BUTTONS -->
   <div class="btn-row">
-    <button class="roll-btn" id="rollBtn" onclick="roll()">♫ Roll</button>
+    <button class="roll-btn" id="rollBtn" onclick="roll()">▶ Roll the Dice</button>
     <button class="clear-btn" onclick="clearAll()">Clear</button>
   </div>
 
+  <!-- MAIN CARD -->
   <div class="card" id="card">
-    <div class="card-accent-bar"></div>
+    <div class="card-bar"></div>
 
-    <!-- Shimmer -->
+    <!-- Shimmer loading -->
     <div class="shimmer-wrap" id="shimmerWrap">
       <div class="shimmer-row">
         <div class="shimmer shimmer-art"></div>
@@ -301,13 +471,14 @@
           <div class="shimmer sh-sub"></div>
         </div>
       </div>
+      <div class="shimmer sh-desc"></div>
       <div class="shimmer sh-btn"></div>
     </div>
 
-    <!-- Empty -->
+    <!-- Empty state -->
     <div class="card-empty" id="cardEmpty">
-      <div class="e-icon">🎵</div>
-      <p>Tap Roll to discover a random<br>album from your list</p>
+      <div class="e-icon">🎧</div>
+      <p>Hit Roll to discover a random album from your unlistened list</p>
     </div>
 
     <!-- Result -->
@@ -318,28 +489,45 @@
           <div class="pick-label" id="pickLabel">Pick #1</div>
           <div class="album-name" id="albumName"></div>
           <div class="artist-name" id="artistName"></div>
-          <div class="year-chip" id="yearChip"></div>
+          <div class="meta-row">
+            <div class="year-chip" id="yearChip" style="display:none;"></div>
+          </div>
         </div>
       </div>
+
+      <!-- Description -->
+      <div class="description-wrap" id="descWrap" style="display:none;">
+        <div class="description-label">About this album</div>
+        <div class="description-text" id="descText"></div>
+      </div>
+
+      <!-- Select hint -->
+      <div class="select-hint">
+        <span>✦ Text is selectable — highlight to copy to Apple Music</span>
+      </div>
+
+      <!-- Actions -->
       <div class="card-actions">
-        <a class="am-btn" id="amBtn" href="#" target="_self">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          Apple Music
+        <a class="am-btn" id="amBtn" href="#" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          Search Apple Music
         </a>
-        <button class="copy-btn" id="copyBtn">📋 Copy</button>
+        <button class="copy-btn" id="copyBtn">📋 Copy All</button>
       </div>
     </div>
   </div>
 
+  <!-- STATUS -->
   <div class="status-bar">
     <div class="status-dot" id="statusDot"></div>
     <div class="status-text" id="statusText">Loading your list…</div>
   </div>
 
+  <!-- RECENTS -->
   <div class="recents-section">
-    <div class="recents-label">Recent picks</div>
+    <div class="recents-label">Recent Picks</div>
     <div class="recents-list" id="recentsList">
-      <div class="recent-item visible" style="opacity:0.3; border-style:dashed;">
+      <div class="recent-item visible" style="opacity:0.25; border-style:dashed;">
         <span style="font-size:11px; color:var(--text2);">No picks yet</span>
       </div>
     </div>
@@ -357,6 +545,8 @@
     const albumName   = document.getElementById('albumName');
     const artistName  = document.getElementById('artistName');
     const yearChip    = document.getElementById('yearChip');
+    const descWrap    = document.getElementById('descWrap');
+    const descText    = document.getElementById('descText');
     const amBtn       = document.getElementById('amBtn');
     const copyBtn     = document.getElementById('copyBtn');
     const countNum    = document.getElementById('countNum');
@@ -368,7 +558,6 @@
     let recents = [];
     let rolling = false;
 
-    // Emoji art based on first letter
     function getArt(name) {
       const emojis = ['🎸','🎹','🥁','🎷','🎺','🎻','🪕','🎼','🎤','🎧','🎵','🎶','🪗','🪘'];
       const i = (name?.charCodeAt(0) || 0) % emojis.length;
@@ -389,14 +578,15 @@
         const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
         const rows = json.table.rows;
 
-        // Col A=0 (listened), Col B=1 (year), Col C=2 (artist), Col D=3 (album), Col E=4 (ignore)
+        // Col A=0 (listened), Col B=1 (year), Col C=2 (artist), Col D=3 (album), Col E=4 (description)
         const unlistened = rows.filter(row => {
           const heard = row.c[0]?.v;
           return heard !== true && heard !== 'TRUE';
         }).map(row => ({
-          year:   row.c[1]?.v?.toString().trim() || '',
-          artist: row.c[2]?.v?.toString().trim() || '',
-          album:  row.c[3]?.v?.toString().trim() || '',
+          year:        row.c[1]?.v?.toString().trim() || '',
+          artist:      row.c[2]?.v?.toString().trim() || '',
+          album:       row.c[3]?.v?.toString().trim() || '',
+          description: row.c[4]?.v?.toString().trim() || '',
         })).filter(a => a.album);
 
         countNum.textContent = unlistened.length;
@@ -407,7 +597,7 @@
           return null;
         }
 
-        setStatus('ok', `${unlistened.length} unlistened albums`);
+        setStatus('ok', `${unlistened.length} albums waiting`);
         rollBtn.disabled = false;
         return unlistened;
       } catch(e) {
@@ -423,7 +613,8 @@
       const amUrl = `https://music.apple.com/search?term=${query}`;
       const parts = [`🎵 ${album.album}`, `🎤 ${album.artist}`];
       if (album.year) parts.push(`📅 ${album.year}`);
-      parts.push(`🎧 ${amUrl}`);
+      if (album.description) parts.push(`📝 ${album.description}`);
+      parts.push(`🔎 ${amUrl}`);
       navigator.clipboard.writeText(parts.join('\n')).then(() => {
         const orig = btn.innerHTML;
         btn.innerHTML = '✓ Copied!';
@@ -438,13 +629,24 @@
       cardEmpty.style.display = 'none';
       cardResult.style.display = 'block';
 
-      const art = getArt(album.album);
-      document.getElementById('vinylArt').textContent = art;
+      document.getElementById('vinylArt').textContent = getArt(album.album);
       pickLabel.textContent  = `Pick #${recents.length + 1}`;
       albumName.textContent  = album.album;
       artistName.textContent = album.artist;
-      yearChip.textContent   = album.year || '';
-      yearChip.style.display = album.year ? 'inline-flex' : 'none';
+
+      if (album.year) {
+        yearChip.textContent = album.year;
+        yearChip.style.display = 'inline-flex';
+      } else {
+        yearChip.style.display = 'none';
+      }
+
+      if (album.description) {
+        descText.textContent = album.description;
+        descWrap.style.display = 'block';
+      } else {
+        descWrap.style.display = 'none';
+      }
 
       const query = encodeURIComponent(album.album.trim());
       amBtn.href = `https://music.apple.com/search?term=${query}`;
@@ -460,7 +662,7 @@
     function renderRecents() {
       recentsList.innerHTML = '';
       if (recents.length === 0) {
-        recentsList.innerHTML = `<div class="recent-item visible" style="opacity:0.3;border-style:dashed;"><span style="font-size:11px;color:var(--text2);">No picks yet</span></div>`;
+        recentsList.innerHTML = `<div class="recent-item visible" style="opacity:0.25;border-style:dashed;"><span style="font-size:11px;color:var(--text2);">No picks yet</span></div>`;
         return;
       }
       recents.forEach((r, i) => {
@@ -474,13 +676,13 @@
             <span class="recent-artist">${r.artist}${r.year ? ' · ' + r.year : ''}</span>
           </div>
           <div class="recent-btns">
-            <a class="recent-am" href="https://music.apple.com/search?term=${query}">Music ↗</a>
+            <a class="recent-am" href="https://music.apple.com/search?term=${query}" target="_blank">Search ↗</a>
             <button class="recent-copy">📋 Copy</button>
           </div>`;
         const copyEl = el.querySelector('.recent-copy');
         copyEl.onclick = () => copyAlbum(r, copyEl);
         recentsList.appendChild(el);
-        setTimeout(() => el.classList.add('visible'), i * 60);
+        setTimeout(() => el.classList.add('visible'), i * 70);
       });
     }
 
